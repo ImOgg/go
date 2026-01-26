@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  go-app:
+    build: .          # 告訴它 Dockerfile 就在這層目錄
+    container_name: my-go-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app  # 把當前目錄 (.) 映射到容器的 /app
+    tty: true         # 保持容器運行，不會一啟動就結束
+    stdin_open: true  # 開啟互動模式
