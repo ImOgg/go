@@ -37,3 +37,6 @@ func main() {
 **正確的導入方式：**
 - go.mod 中是 `module my-api` → 導入時用 `"my-api/routes"`
 - 不要用 `"go/routes"` 或其他自己造的路徑
+
+[使用 Golang 打造 Web 應用程式](https://willh.gitbook.io/build-web-application-with-golang-zhtw/01.0)
+[Golang教學筆記](https://hackmd.io/@action/rk8R2cuAU)
