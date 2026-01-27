@@ -1,42 +1,29 @@
-# 初始化專案，名字可以隨便取（例如 myapi）
-go mod init myapi
+# My API - Gin Web 應用程式
 
-# 下載 Gin 框架
-go get -u github.com/gin-gonic/gin
+基於 Gin 框架的 Go Web API 專案
 
----
+## 快速開始
 
-## 常見問題筆記
+```bash
+# 安裝依賴
+go mod tidy
 
-### 問題 1：main.go 缺少 package 聲明
-**錯誤訊息：** `main.go:1:1: expected 'package', found 'func'`
-
-**原因：** Go 的每個文件都必須以 `package` 開頭
-
-**解決方案：**
-```go
-package main
-
-import (
-	"github.com/gin-gonic/gin"
-	"my-api/routes"  // 注意：導入路徑要用 go.mod 中的 module 名稱
-)
-
-func main() {
-	r := gin.Default()
-	routes.InitRoutes(r)
-	r.Run(":8080")
-}
+# 運行應用程式
+go run main.go
 ```
 
-### 問題 2：導入路徑錯誤
-**錯誤訊息：** `main.go:5:2: package go/routes is not in std`
+應用程式將在 `http://localhost:8080` 啟動
 
-**原因：** 導入路徑要用 `go.mod` 中定義的 module 名稱
+## 文檔
 
-**正確的導入方式：**
-- go.mod 中是 `module my-api` → 導入時用 `"my-api/routes"`
-- 不要用 `"go/routes"` 或其他自己造的路徑
+詳細文檔請查看 [docs](docs/) 資料夾：
 
-[使用 Golang 打造 Web 應用程式](https://willh.gitbook.io/build-web-application-with-golang-zhtw/01.0)
-[Golang教學筆記](https://hackmd.io/@action/rk8R2cuAU)
+- [專案設置](docs/setup.md) - 初始化專案和專案結構
+- [常用命令](docs/commands.md) - Go 常用命令參考
+- [常見問題](docs/troubleshooting.md) - 問題排查與解決方案
+
+## 技術棧
+
+- **框架**: Gin Web Framework
+- **語言**: Go
+- **容器化**: Docker & Docker Compose
