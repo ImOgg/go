@@ -8,7 +8,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"my-api/config"
-	"my-api/models"
 )
 
 var DB *gorm.DB
@@ -43,11 +42,6 @@ func InitDB() {
 	
 	fmt.Printf("資料庫連接成功！(類型: %s)\n", cfg.Type)
 	
-	// 自動遷移（建立/更新資料表）
-	err = DB.AutoMigrate(&models.User{})
-	if err != nil {
-		log.Fatal("資料表遷移失敗:", err)
-	}
-	
-	fmt.Println("資料表遷移完成！")
+	// 註解：不再使用 AutoMigrate，改用 golang-migrate
+	// 請使用 database.RunMigrations() 來執行 migrations
 }
