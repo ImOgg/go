@@ -1,4 +1,4 @@
-package database
+package bootstrap
 
 import (
 	"context"
@@ -11,9 +11,9 @@ import (
 )
 
 var RedisClient *redis.Client
-var ctx = context.Background()
+var redisCtx = context.Background()
 
-// 初始化 Redis 連接
+// InitRedis 初始化 Redis 連接
 func InitRedis() {
 	cfg := config.GlobalConfig.Redis
 	db, _ := strconv.Atoi(cfg.DB)
@@ -25,7 +25,7 @@ func InitRedis() {
 	})
 
 	// 測試連接
-	_, err := RedisClient.Ping(ctx).Result()
+	_, err := RedisClient.Ping(redisCtx).Result()
 	if err != nil {
 		log.Fatal("無法連接到 Redis:", err)
 	}
@@ -33,7 +33,7 @@ func InitRedis() {
 	fmt.Println("Redis 連接成功！")
 }
 
-// 獲取 Context
+// GetRedisContext 獲取 Redis Context
 func GetRedisContext() context.Context {
-	return ctx
+	return redisCtx
 }
