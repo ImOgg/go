@@ -64,22 +64,21 @@ go run cmd/migrate/main.go rollback
 
 ---
 
-## 📁 檔案結構
+## 檔案結構
 
 ```
 database/
-  ├── migrations/
-  │   ├── migration.go                      # Migration 介面定義
-  │   ├── registry.go                       # 註冊器（管理所有 migrations）
-  │   └── 000001_create_users_table.go     # 實際的 migration（一個檔案包含 Up 和 Down）
-  │
-  └── migrate_simple.go                     # Migration 執行引擎
+  ├── migrator.go                          # Migration 執行引擎
+  └── migrations/
+      ├── migration.go                     # Migration 介面定義
+      ├── registry.go                      # 註冊器（管理所有 migrations）
+      └── 000001_create_users_table.go     # 實際的 migration（一個檔案包含 Up 和 Down）
 
 cmd/
   └── migrate/
-      └── main.go                           # Migration 命令行工具
+      └── main.go                          # Migration 命令行工具
 
-main.go                                     # 啟動時自動執行 migration（可選）
+main.go                                    # 啟動時自動執行 migration（可選）
 ```
 
 ---
@@ -357,13 +356,13 @@ go run cmd/migrate/main.go migrate
 ```go
 func main() {
 	config.LoadConfig()
-	database.InitDB()
-	
+	bootstrap.InitDB()  // 注意：資料庫初始化已移至 bootstrap/
+
 	// 自動執行 migrations
 	if err := database.RunMigrations(); err != nil {
 		log.Println("⚠️  Migration 警告:", err)
 	}
-	
+
 	// ... 啟動服務
 }
 ```
@@ -519,12 +518,12 @@ VALUES ('000002', 'skipped_migration');
 
 ---
 
-## 📚 相關文檔
+## 相關文檔
 
-- [專案設置](setup.md)
-- [常用命令](commands.md)
-- [資料庫操作](database.md)
-- [Controller 結構](controller-structure.md)
+- [專案設置](01-setup.md)
+- [架構說明](02-architecture.md)
+- [資料庫連接](03-database.md)
+- [常用命令](06-commands.md)
 
 ---
 

@@ -303,12 +303,13 @@ package userController  // ❌ 可以但不推薦
 
 ---
 
-## 📚 相關文檔
+## 相關文檔
 
-- [專案設置](setup.md)
-- [常用命令](commands.md)
-- [資料庫操作](database.md)
-- [常見問題](troubleshooting.md)
+- [專案設置](01-setup.md)
+- [架構說明](02-architecture.md)
+- [資料庫連接](03-database.md)
+- [常用命令](06-commands.md)
+- [常見問題](07-troubleshooting.md)
 
 ---
 
