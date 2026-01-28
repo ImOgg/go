@@ -4,6 +4,7 @@ import (
 	"log"
 	
 	"github.com/gin-gonic/gin"
+	"my-api/app"
 	"my-api/config"
 	"my-api/database"
 	_ "my-api/database/migrations" // 引入 migrations 確保註冊
@@ -30,10 +31,13 @@ func main() {
 	// 初始化 Redis（可選）
 	// database.InitRedis()
 
+	// 建立應用程式容器（Laravel 風格）
+	application := app.NewApp(database.DB)
+
 	r := gin.Default()
 
-	// 呼叫路由設定
-	routes.InitRoutes(r)
+	// 設定所有路由
+	routes.SetupRoutes(r, application)
 
 	r.Run(":" + config.GlobalConfig.App.Port)
 }
