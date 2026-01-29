@@ -11,7 +11,11 @@
 ### 待辦事項
 
 #### 核心功能
-- [ ] JWT 認證（Auth）- 完整的登入/登出/Token 刷新
+- [x] JWT 認證（Auth）- 完整的登入/登出
+- [ ] Refresh Token - 自動續期機制
+- [ ] 角色權限（RBAC）- 使用者角色與權限管理
+- [ ] Token 黑名單 - 用 Redis 實作登出失效
+- [ ] 社交登入 - Google、GitHub OAuth
 - [ ] Queue Job - 背景任務處理（類似 Laravel Queue）
 - [ ] WebSocket - 即時通訊支援
 - [ ] Email - 郵件發送（SMTP、第三方服務）
@@ -42,6 +46,55 @@
 - [ ] 排程任務（Scheduler）- 類似 Laravel Task Scheduling
 - [ ] Event/Listener - 事件驅動架構
 - [ ] Notification - 通知系統（Email、SMS、Push）
+
+---
+
+## [0.4.0] - 2026-01-29
+
+### 新增 - JWT 認證系統
+
+#### 新增
+- `app/utils/jwt.go` - JWT 工具函式
+  - `GenerateToken()` - 產生 JWT Token
+  - `ValidateToken()` - 驗證 JWT Token
+  - `HashPassword()` - 密碼加密（bcrypt）
+  - `CheckPassword()` - 密碼驗證
+
+- `app/controllers/auth_controller.go` - 認證控制器
+  - `Register()` - 使用者註冊
+  - `Login()` - 使用者登入
+  - `Logout()` - 使用者登出
+  - `Me()` - 取得當前用戶資訊
+
+- `app/services/auth_service.go` - 認證服務層
+
+- `app/requests/auth_request.go` - 認證請求驗證
+  - `RegisterRequest` - 註冊請求驗證
+  - `LoginRequest` - 登入請求驗證
+
+- `app/responses/auth_response.go` - 認證回應 DTO
+
+- `database/migrations/000002_add_password_to_users.go` - 新增 password 欄位
+
+#### 變更
+- `app/models/user.go` - 新增 Password 欄位（json:"-" 隱藏）
+- `app/middleware/auth.go` - 實作真正的 JWT 驗證
+- `app/app.go` - 註冊 AuthService
+- `config/config.go` - 新增 JWTConfig 設定
+- `routes/api.go` - 新增認證路由
+- `.env` - 新增 JWT_SECRET、JWT_EXPIRY_HOURS
+
+#### API 端點
+| 方法 | 路徑 | 說明 | 需驗證 |
+|------|------|------|--------|
+| POST | `/api/register` | 使用者註冊 | 否 |
+| POST | `/api/login` | 使用者登入 | 否 |
+| POST | `/api/logout` | 使用者登出 | 是 |
+| GET | `/api/me` | 取得當前用戶 | 是 |
+
+#### 依賴套件
+- `github.com/golang-jwt/jwt/v5` - JWT 處理
+- `golang.org/x/crypto/bcrypt` - 密碼加密
 
 ---
 
@@ -145,4 +198,4 @@
 
 ---
 
-**最後更新：** 2026-01-28
+**最後更新：** 2026-01-29
