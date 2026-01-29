@@ -11,6 +11,7 @@ import (
 func SetupRoutes(router *gin.Engine, application *app.App) {
 	// 建立 Controllers
 	userCtrl := controllers.NewUserController(application)
+	authCtrl := controllers.NewAuthController(application)
 
 	// 健康檢查（不需要驗證）
 	router.GET("/health", func(c *gin.Context) {
@@ -26,15 +27,18 @@ func SetupRoutes(router *gin.Engine, application *app.App) {
 		// 公開路由（不需要驗證）
 		public := api.Group("")
 		{
-			// 可以加登入、註冊等公開 API
-			// public.POST("/login", authCtrl.Login)
-			// public.POST("/register", authCtrl.Register)
+			public.POST("/register", authCtrl.Register) // 註冊
+			public.POST("/login", authCtrl.Login)       // 登入
 		}
 
 		// 需要驗證的路由
 		protected := api.Group("")
-		protected.Use(middleware.AuthMiddleware()) // 使用驗證中間件
+		protected.Use(middleware.AuthMiddleware()) // 使用 JWT 驗證中間件
 		{
+			// 認證相關
+			protected.POST("/logout", authCtrl.Logout) // 登出
+			protected.GET("/me", authCtrl.Me)          // 取得當前用戶
+
 			// RESTful User 路由
 			users := protected.Group("/users")
 			{

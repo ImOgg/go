@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -11,6 +12,12 @@ type Config struct {
 	App      AppConfig
 	Database DatabaseConfig
 	Redis    RedisConfig
+	JWT      JWTConfig
+}
+
+type JWTConfig struct {
+	Secret      string
+	ExpiryHours int
 }
 
 type AppConfig struct {
@@ -66,7 +73,24 @@ func LoadConfig() {
 			Password: getEnv("REDIS_PASSWORD", ""),
 			DB:       getEnv("REDIS_DB", "0"),
 		},
+		JWT: JWTConfig{
+			Secret:      getEnv("JWT_SECRET", "your-super-secret-key-change-in-production"),
+			ExpiryHours: getEnvAsInt("JWT_EXPIRY_HOURS", 24),
+		},
 	}
+}
+
+// 獲取環境變數並轉換為整數
+func getEnvAsInt(key string, defaultValue int) int {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		return defaultValue
+	}
+	return intValue
 }
 
 // 獲取環境變數，如果不存在則返回預設值

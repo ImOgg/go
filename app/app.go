@@ -15,6 +15,7 @@ type App struct {
 
 	// Services
 	UserService services.UserService
+	AuthService services.AuthService
 }
 
 // NewApp - 建立新的應用程式容器
@@ -28,6 +29,7 @@ func NewApp(db *gorm.DB) *App {
 
 	// 初始化 Services（注入 Repository 依賴）
 	app.UserService = services.NewUserService(app.UserRepository)
+	app.AuthService = services.NewAuthService(app.UserRepository)
 
 	return app
 }

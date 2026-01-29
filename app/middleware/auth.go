@@ -5,14 +5,15 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"my-api/app/utils"
 )
 
-// AuthMiddleware - 驗證中間件
+// AuthMiddleware - JWT 驗證中間件
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 從 Header 取得 Token
 		authHeader := c.GetHeader("Authorization")
-		
+
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
@@ -33,31 +34,23 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		token := parts[1]
+		tokenString := parts[1]
 
-		// TODO: 實作真正的 Token 驗證（JWT、Session 等）
-		// 這裡先做簡單驗證示範
-		if token == "" {
+		// 驗證 JWT Token
+		claims, err := utils.ValidateToken(tokenString)
+		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
-				"message": "無效的授權憑證",
+				"message": "無效或已過期的授權憑證",
 			})
 			c.Abort()
 			return
 		}
 
-		// 驗證成功，可以將用戶資訊存入 context
-		// user, err := validateToken(token)
-		// if err != nil {
-		//     c.JSON(http.StatusUnauthorized, gin.H{"success": false, "message": "授權已過期"})
-		//     c.Abort()
-		//     return
-		// }
-		// c.Set("user", user)
+		// 將用戶資訊存入 context，供後續 handler 使用
+		c.Set("user_id", claims.UserID)
+		c.Set("user_email", claims.Email)
 
-		// 暫時示範：任何有 token 的都通過
-		c.Set("token", token)
-		
 		c.Next()
 	}
 }
