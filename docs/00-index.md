@@ -15,6 +15,7 @@
 | 05 | [Controller 結構](05-controller-structure.md) | Controller 組織方式、與 Laravel 對比 | 寫 API |
 | 06 | [常用命令](06-commands.md) | go build、go run、go mod 等 | 快速參考 |
 | 07 | [常見問題](07-troubleshooting.md) | 錯誤排查、解決方案 | 遇到問題 |
+| 08 | [JWT 認證](08-jwt-authentication.md) | Token 驗證、登入/註冊 | 身份驗證 |
 
 ---
 
@@ -115,4 +116,4 @@ my-api/
 
 ---
 
-**最後更新：** 2026-01-28
+**最後更新：** 2026-01-29
