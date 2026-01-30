@@ -22,6 +22,14 @@ func NewUserController(app *app.App) *UserController {
 
 // Index - 取得所有使用者
 // GET /api/users
+//
+// Go 方法語法說明：
+// func (ctrl *UserController) Index(c *gin.Context)
+//      ─────────┬───────────  ──┬──  ──────┬──────
+//            接收者           方法名      參數
+//      （等於 Laravel 的 $this）      （Gin 的請求上下文）
+//
+// ctrl.app.UserService → 等於 Laravel 的 $this->userService
 func (ctrl *UserController) Index(c *gin.Context) {
 	users, err := ctrl.app.UserService.GetAllUsers()
 	if err != nil {
@@ -35,6 +43,9 @@ func (ctrl *UserController) Index(c *gin.Context) {
 // Show - 取得單一使用者
 // GET /api/users/:id
 func (ctrl *UserController) Show(c *gin.Context) {
+	// strconv.ParseUint(字串, 進位制, 位元大小)
+	// 10 = 十進位，32 = 限制在 uint32 範圍（0 ~ 4,294,967,295）
+	// 防止數值溢位（overflow），避免惡意輸入超大數字造成系統問題
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		traits.RespondError(c, http.StatusBadRequest, "無效的使用者 ID", err.Error())
@@ -52,17 +63,27 @@ func (ctrl *UserController) Show(c *gin.Context) {
 
 // Store - 新增使用者
 // POST /api/users
+//
+// 資料綁定流程：
+// 1. var req → 宣告空的 struct（此時 Name="", Email="", Age=0）
+// 2. req.Validate(c) → 內部呼叫 ShouldBindJSON，把 JSON body 填入 req
+// 3. CreateUser(&req) → 用填好資料的 req 建立使用者
+//
+// 類似 Laravel：public function store(CreateUserRequest $request)
+// 差別是 Laravel 自動注入並驗證，Go 需要手動宣告和呼叫
 func (ctrl *UserController) Store(c *gin.Context) {
+	// 步驟 1：宣告空的 request struct
 	var req requests.CreateUserRequest
-	
-	// 驗證請求
+
+	// 步驟 2：驗證請求（內部會把 JSON 資料綁定到 req）
 	if err := req.Validate(c); err != nil {
 		validationErrors := requests.FormatValidationError(err)
 		traits.RespondValidationError(c, validationErrors)
 		return
 	}
 
-	// 呼叫 Service 建立使用者
+	// 步驟 3：用填好資料的 req 建立使用者
+	// &req = 傳遞 req 的記憶體位址（指標），避免複製整個 struct
 	user, err := ctrl.app.UserService.CreateUser(&req)
 	if err != nil {
 		traits.RespondError(c, http.StatusBadRequest, err.Error(), nil)
