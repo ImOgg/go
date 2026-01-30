@@ -32,3 +32,4 @@ go get -u github.com/gin-gonic/gin
 
 - [使用 Golang 打造 Web 應用程式](https://willh.gitbook.io/build-web-application-with-golang-zhtw/01.0)
 - [Golang教學筆記](https://hackmd.io/@action/rk8R2cuAU)
+- [golang 有哪些快速开发的web框架？](https://zhuanlan.zhihu.com/p/512269988)
