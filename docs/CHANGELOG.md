@@ -32,6 +32,7 @@
 - [ ] Input Validation - 更完整的輸入驗證
 
 #### 測試
+- [x] 單元測試範例 - `app/utils/jwt_test.go`
 - [ ] 單元測試（Unit Test）- Repository、Service 層
 - [ ] 整合測試（Integration Test）- API 端對端
 - [ ] Mock 測試 - 資料庫 Mock
@@ -46,6 +47,41 @@
 - [ ] 排程任務（Scheduler）- 類似 Laravel Task Scheduling
 - [ ] Event/Listener - 事件驅動架構
 - [ ] Notification - 通知系統（Email、SMS、Push）
+
+---
+
+## [0.5.0] - 2026-02-02
+
+### 新增 - 測試框架與文件
+
+#### 新增
+- `app/utils/jwt_test.go` - 單元測試範例
+  - `TestHashPassword` - 測試密碼加密
+  - `TestCheckPassword` - 測試密碼驗證
+  - `TestHashPassword_DifferentHashes` - 測試 bcrypt salt 機制
+  - `TestCheckPassword_TableDriven` - Table-Driven 測試範例
+  - `TestHashPassword_EmptyPassword` - 邊界條件測試
+
+- `docs/09-testing.md` - 測試指南文件
+  - Go 測試基礎
+  - 與 Laravel PHPUnit 對比
+  - Table-Driven 測試模式
+  - 常用測試指令
+
+#### 移除
+- `models/` 根目錄資料夾 - 刪除空的舊資料夾（已遷移至 `app/models/`）
+
+#### 文件更新
+- `docs/00-index.md` - 新增測試指南索引
+
+#### 測試指令
+```bash
+# 執行測試
+docker exec my-go-app go test -v ./app/utils/...
+
+# 執行整個專案測試
+docker exec my-go-app go test -v ./...
+```
 
 ---
 
@@ -198,4 +234,4 @@
 
 ---
 
-**最後更新：** 2026-01-29
+**最後更新：** 2026-02-02
