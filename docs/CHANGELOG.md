@@ -33,9 +33,9 @@
 
 #### 測試
 - [x] 單元測試範例 - `app/utils/jwt_test.go`
-- [ ] 單元測試（Unit Test）- Repository、Service 層
+- [x] Mock 測試 - `app/services/user_service_test.go`
+- [ ] 單元測試（Unit Test）- Repository 層
 - [ ] 整合測試（Integration Test）- API 端對端
-- [ ] Mock 測試 - 資料庫 Mock
 
 #### 文件
 - [ ] Swagger API 文件
@@ -62,10 +62,20 @@
   - `TestCheckPassword_TableDriven` - Table-Driven 測試範例
   - `TestHashPassword_EmptyPassword` - 邊界條件測試
 
+- `app/services/user_service_test.go` - Mock 測試範例
+  - `mockUserRepository` - 模擬 UserRepository interface
+  - `TestUserService_CreateUser` - 測試新增使用者（含 Email 重複檢查）
+  - `TestUserService_GetUserByID` - 測試取得單一使用者
+  - `TestUserService_UpdateUser` - 測試更新使用者
+  - `TestUserService_DeleteUser` - 測試刪除使用者
+  - `TestUserService_GetAllUsers` - 測試取得所有使用者
+
 - `docs/09-testing.md` - 測試指南文件
   - Go 測試基礎
   - 與 Laravel PHPUnit 對比
   - Table-Driven 測試模式
+  - Mock 測試原理與範例
+  - 測試環境設定說明
   - 常用測試指令
 
 #### 移除

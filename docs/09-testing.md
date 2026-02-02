@@ -147,55 +147,172 @@ func TestCheckPassword_WrongPassword(t *testing.T) {}
 
 ## 專案現有測試
 
-| 檔案 | 測試內容 |
-|------|----------|
-| `app/utils/jwt_test.go` | 密碼加密與驗證 |
+| 檔案 | 測試內容 | 類型 |
+|------|----------|------|
+| `app/utils/jwt_test.go` | 密碼加密與驗證 | 單元測試 |
+| `app/services/user_service_test.go` | Service 層 CRUD | Mock 測試 |
 
 ---
 
-## 進階主題
+## 與 phpunit.xml 的對比
 
-### Mock 測試
+Go **沒有** 類似 `phpunit.xml` 的官方配置檔，但有替代方案：
 
-Go 可以使用介面來實現 Mock：
+| Laravel/PHPUnit | Go 替代方案 |
+|-----------------|------------|
+| `phpunit.xml` 設定測試資料庫 | 使用 Mock（不碰資料庫） |
+| `DB_DATABASE=testing` | 環境變數或 `.env.testing` |
+| `RefreshDatabase` trait | Mock 或獨立測試資料庫 |
+| `setUp()` / `tearDown()` | `TestMain()` 函數 |
+
+---
+
+## Mock 測試（推薦）
+
+### 為什麼用 Mock？
+
+- **不碰真實資料庫** → 測試快速、安全
+- **可控制回傳值** → 方便測試各種情境（成功、失敗、邊界條件）
+- **依賴注入** → 本專案已使用 interface，非常適合 Mock
+
+### Mock 原理
+
+```
+┌─────────────────┐      ┌─────────────────┐
+│   UserService   │ ───▶ │ UserRepository  │ (interface)
+└─────────────────┘      └─────────────────┘
+                                  │
+                    ┌─────────────┴─────────────┐
+                    │                           │
+              ┌─────▼─────┐              ┌──────▼──────┐
+              │ 正式環境  │              │  測試環境   │
+              │ userRepo  │              │ mockRepo    │
+              │ (用 GORM) │              │ (用 map)    │
+              └───────────┘              └─────────────┘
+```
+
+### 本專案 Mock 範例
+
+參考 `app/services/user_service_test.go`：
 
 ```go
-// 定義介面
-type UserRepository interface {
-    FindByID(id uint) (*User, error)
+// Mock Repository - 實作 UserRepository interface
+type mockUserRepository struct {
+    users    map[uint]*models.User  // 用 map 模擬資料庫
+    emailMap map[string]*models.User
+    nextID   uint
 }
 
-// 測試用的 Mock
-type mockUserRepo struct {
-    user *User
-    err  error
+// 實作 interface 的所有方法
+func (m *mockUserRepository) Create(user *models.User) error {
+    user.ID = m.nextID
+    m.nextID++
+    m.users[user.ID] = user
+    m.emailMap[user.Email] = user
+    return nil
 }
 
-func (m *mockUserRepo) FindByID(id uint) (*User, error) {
-    return m.user, m.err
+func (m *mockUserRepository) FindByID(id uint) (*models.User, error) {
+    if user, ok := m.users[id]; ok {
+        return user, nil
+    }
+    return nil, errors.New("record not found")
 }
+
+// ... 其他方法
 
 // 測試
-func TestUserService_GetUser(t *testing.T) {
-    mockRepo := &mockUserRepo{
-        user: &User{ID: 1, Name: "Test"},
-        err:  nil,
+func TestUserService_CreateUser(t *testing.T) {
+    mockRepo := newMockUserRepository()  // 使用 Mock
+    service := NewUserService(mockRepo)  // 注入 Mock
+
+    req := &requests.CreateUserRequest{
+        Name:  "張三",
+        Email: "test@example.com",
+        Age:   25,
     }
 
-    service := NewUserService(mockRepo)
-    user, err := service.GetUserByID(1)
-    // ...
+    resp, err := service.CreateUser(req)
+
+    if err != nil {
+        t.Errorf("不預期的錯誤: %v", err)
+    }
+    if resp.Name != "張三" {
+        t.Errorf("Name 不符")
+    }
 }
 ```
 
-### 常用測試套件
+---
 
-| 套件 | 用途 |
-|------|------|
-| `testify` | 斷言、Mock |
-| `gomock` | Google 的 Mock 框架 |
-| `httptest` | HTTP 測試（內建） |
-| `sqlmock` | 資料庫 Mock |
+## 測試環境設定（整合測試用）
+
+如果需要真正的資料庫測試，可以設定測試環境：
+
+### 方式 1：TestMain 初始化
+
+```go
+// user_repository_test.go
+package repositories
+
+import (
+    "os"
+    "testing"
+)
+
+func TestMain(m *testing.M) {
+    // 設定測試環境變數
+    os.Setenv("DB_DATABASE", "my_api_test")
+
+    // 初始化測試資料庫
+    // bootstrap.InitTestDB()
+
+    // 執行測試
+    code := m.Run()
+
+    // 清理
+    // bootstrap.CleanupTestDB()
+
+    os.Exit(code)
+}
+```
+
+### 方式 2：.env.testing
+
+```env
+# .env.testing
+DB_HOST=localhost
+DB_DATABASE=my_api_test
+DB_USERNAME=root
+DB_PASSWORD=password
+```
+
+---
+
+## 常用測試套件
+
+| 套件 | 用途 | 安裝 |
+|------|------|------|
+| `testify` | 斷言、Mock | `go get github.com/stretchr/testify` |
+| `gomock` | Google Mock 框架 | `go get github.com/golang/mock/gomock` |
+| `httptest` | HTTP 測試 | 內建 |
+| `sqlmock` | 資料庫 Mock | `go get github.com/DATA-DOG/go-sqlmock` |
+
+---
+
+## 測試覆蓋率
+
+```bash
+# 查看覆蓋率百分比
+docker exec my-go-app go test -cover ./...
+
+# 產生詳細覆蓋率報告
+docker exec my-go-app go test -coverprofile=coverage.out ./...
+
+# 在瀏覽器查看（需將檔案複製出來）
+docker cp my-go-app:/app/coverage.out ./coverage.out
+go tool cover -html=coverage.out
+```
 
 ---
 
