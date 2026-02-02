@@ -17,6 +17,7 @@
 | 07 | [常見問題](07-troubleshooting.md) | 錯誤排查、解決方案 | 遇到問題 |
 | 08 | [JWT 認證](08-jwt-authentication.md) | Token 驗證、登入/註冊 | 身份驗證 |
 | 09 | [測試指南](09-testing.md) | 單元測試、Table-Driven 測試 | 品質保證 |
+| 10 | [併發處理](10-concurrency.md) | Goroutines、Channels、Worker Pool | 任務隊列 |
 
 ---
 
