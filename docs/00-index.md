@@ -18,6 +18,7 @@
 | 08 | [JWT 認證](08-jwt-authentication.md) | Token 驗證、登入/註冊 | 身份驗證 |
 | 09 | [測試指南](09-testing.md) | 單元測試、Table-Driven 測試 | 品質保證 |
 | 10 | [併發處理](10-concurrency.md) | Goroutines、Channels、Worker Pool | 任務隊列 |
+| 11 | [日誌系統](11-logging.md) | zerolog 結構化日誌、Request ID | 除錯追蹤 |
 
 ---
 
@@ -60,7 +61,8 @@ my-api/
 │
 ├── bootstrap/              # 啟動/連線初始化
 │   ├── database.go        # GORM 資料庫連接
-│   └── redis.go           # Redis 連接
+│   ├── redis.go           # Redis 連接
+│   └── logger.go          # Logger 初始化
 │
 ├── config/                 # 配置模組
 │   └── config.go          # 環境變數載入
@@ -74,6 +76,9 @@ my-api/
 │
 ├── cmd/                    # 命令行工具
 │   └── migrate/           # Migration CLI
+│
+├── storage/                # 儲存目錄
+│   └── logs/              # 日誌檔案
 │
 ├── docs/                   # 文件（你正在看的）
 │
@@ -92,6 +97,7 @@ my-api/
 | ORM | GORM |
 | 資料庫 | MySQL / PostgreSQL |
 | 快取 | Redis |
+| 日誌 | zerolog + lumberjack |
 | 容器化 | Docker |
 
 ---
@@ -118,4 +124,4 @@ my-api/
 
 ---
 
-**最後更新：** 2026-01-29
+**最後更新：** 2026-02-03

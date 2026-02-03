@@ -21,7 +21,7 @@
 - [ ] Email - 郵件發送（SMTP、第三方服務）
 - [ ] File Storage - 檔案上傳（本地、S3、雲端）
 - [ ] Cache - 快取策略（Redis 快取層封裝）
-- [ ] Logging - 結構化日誌系統（類似 Laravel Log）
+- [x] Logging - 結構化日誌系統（類似 Laravel Log）
 
 #### 安全性
 - [ ] CORS 設定優化 - 目前是允許全部，需要限制來源
@@ -47,6 +47,73 @@
 - [ ] 排程任務（Scheduler）- 類似 Laravel Task Scheduling
 - [ ] Event/Listener - 事件驅動架構
 - [ ] Notification - 通知系統（Email、SMS、Push）
+
+---
+
+## [0.6.0] - 2026-02-03
+
+### 新增 - 結構化日誌系統
+
+#### 新增
+- `app/pkg/logger/logger.go` - Logger 核心封裝
+  - 使用 zerolog 高性能日誌套件
+  - 支援多日誌等級：debug, info, warn, error, fatal
+  - Laravel 風格的便捷方法：`Debug()`, `Info()`, `Warning()`, `Error()`, `Fatal()`
+  - 支援結構化 context 附加資訊
+  - `WithRequestID()` - 建立帶有 Request ID 的子 Logger
+  - `WithContext()` - 建立帶有自訂欄位的子 Logger
+  - `WithError()` - 建立帶有錯誤資訊的子 Logger
+
+- `app/pkg/logger/context.go` - Context 輔助函數
+  - `FromGinContext()` - 從 Gin context 取得 Logger
+  - `ToGinContext()` - 將 Logger 存入 Gin context
+  - `GetRequestID()` - 取得 Request ID
+
+- `bootstrap/logger.go` - Logger 初始化
+  - 全域 `bootstrap.Log` 變數
+
+- `app/middleware/request_id.go` - Request ID 中間件
+  - 為每個請求生成唯一 UUID
+  - 支援從 `X-Request-ID` header 取得（分散式追蹤）
+  - 自動設定 Response Header
+
+- `storage/logs/` - 日誌存放目錄
+
+#### 變更
+- `config/config.go` - 新增 LogConfig 配置結構
+- `app/app.go` - 注入 Logger 到 App 容器
+- `app/middleware/logger.go` - 改用 zerolog 結構化日誌
+- `routes/api.go` - 新增全域中間件（Recovery、RequestID、Logger、CORS）
+- `main.go` - 新增 Logger 初始化，改用 `gin.New()`
+
+#### 環境變數
+```env
+LOG_LEVEL=debug        # 日誌等級
+LOG_FORMAT=console     # console 或 json
+LOG_OUTPUT=stdout      # stdout, file, both
+LOG_FILE_PATH=storage/logs/app.log
+LOG_MAX_SIZE=100       # 單檔最大 MB
+LOG_MAX_BACKUPS=30     # 保留檔案數
+LOG_MAX_AGE=30         # 保留天數
+LOG_COMPRESS=true      # 壓縮舊檔
+```
+
+#### 依賴套件
+- `github.com/rs/zerolog` - 高性能結構化日誌
+- `gopkg.in/natefinch/lumberjack.v2` - 日誌檔案輪替
+- `github.com/google/uuid` - UUID 生成
+
+#### 日誌輸出範例
+
+開發環境 (console):
+```
+2026-02-03 14:30:45 INF Request request_id=abc-123 status=200 method=GET path=/api/users latency=12ms
+```
+
+生產環境 (JSON):
+```json
+{"level":"info","time":"2026-02-03T14:30:50+08:00","request_id":"abc-123","status":200,"method":"GET","path":"/api/users","message":"Request"}
+```
 
 ---
 
@@ -244,4 +311,4 @@ docker exec my-go-app go test -v ./...
 
 ---
 
-**最後更新：** 2026-02-02
+**最後更新：** 2026-02-03

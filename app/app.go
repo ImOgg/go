@@ -2,13 +2,15 @@ package app
 
 import (
 	"gorm.io/gorm"
+	"my-api/app/pkg/logger"
 	"my-api/app/repositories"
 	"my-api/app/services"
 )
 
 // App - 應用程式容器（類似 Laravel 的 Service Container）
 type App struct {
-	DB *gorm.DB
+	DB     *gorm.DB
+	Logger *logger.Logger
 
 	// Repositories
 	UserRepository repositories.UserRepository
@@ -19,9 +21,10 @@ type App struct {
 }
 
 // NewApp - 建立新的應用程式容器
-func NewApp(db *gorm.DB) *App {
+func NewApp(db *gorm.DB, log *logger.Logger) *App {
 	app := &App{
-		DB: db,
+		DB:     db,
+		Logger: log,
 	}
 
 	// 初始化 Repositories

@@ -13,6 +13,12 @@ func SetupRoutes(router *gin.Engine, application *app.App) {
 	userCtrl := controllers.NewUserController(application)
 	authCtrl := controllers.NewAuthController(application)
 
+	// 全域中間件
+	router.Use(gin.Recovery())        // 錯誤恢復
+	router.Use(middleware.RequestID()) // Request ID
+	router.Use(middleware.Logger())    // 結構化日誌
+	router.Use(middleware.CORS())      // CORS
+
 	// 健康檢查（不需要驗證）
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{

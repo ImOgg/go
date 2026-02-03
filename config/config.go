@@ -13,6 +13,18 @@ type Config struct {
 	Database DatabaseConfig
 	Redis    RedisConfig
 	JWT      JWTConfig
+	Log      LogConfig
+}
+
+type LogConfig struct {
+	Level      string // debug, info, warn, error, fatal
+	Format     string // console, json
+	Output     string // stdout, file, both
+	FilePath   string // 日誌檔案路徑
+	MaxSize    int    // 單檔最大 MB
+	MaxBackups int    // 保留檔案數
+	MaxAge     int    // 保留天數
+	Compress   bool   // 是否壓縮舊檔
 }
 
 type JWTConfig struct {
@@ -77,6 +89,16 @@ func LoadConfig() {
 			Secret:      getEnv("JWT_SECRET", "your-super-secret-key-change-in-production"),
 			ExpiryHours: getEnvAsInt("JWT_EXPIRY_HOURS", 24),
 		},
+		Log: LogConfig{
+			Level:      getEnv("LOG_LEVEL", "debug"),
+			Format:     getEnv("LOG_FORMAT", "console"),
+			Output:     getEnv("LOG_OUTPUT", "stdout"),
+			FilePath:   getEnv("LOG_FILE_PATH", "storage/logs/app.log"),
+			MaxSize:    getEnvAsInt("LOG_MAX_SIZE", 100),
+			MaxBackups: getEnvAsInt("LOG_MAX_BACKUPS", 30),
+			MaxAge:     getEnvAsInt("LOG_MAX_AGE", 30),
+			Compress:   getEnvAsBool("LOG_COMPRESS", true),
+		},
 	}
 }
 
@@ -100,4 +122,13 @@ func getEnv(key, defaultValue string) string {
 		return defaultValue
 	}
 	return value
+}
+
+// 獲取環境變數並轉換為布林值
+func getEnvAsBool(key string, defaultValue bool) bool {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value == "true" || value == "1" || value == "yes"
 }
