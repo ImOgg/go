@@ -1,6 +1,9 @@
 # 環境變數檔案
 .env
 
+# 日誌檔案
+storage/logs/*.log
+
 # Go
 *.exe
 *.exe~
