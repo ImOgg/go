@@ -18,9 +18,9 @@ go run main.go
 
 詳細文檔請查看 [docs](docs/) 資料夾：
 
-- [專案設置](docs/setup.md) - 初始化專案和專案結構
-- [常用命令](docs/commands.md) - Go 常用命令參考
-- [常見問題](docs/troubleshooting.md) - 問題排查與解決方案
+- [專案設置](docs/01-setup.md) - 初始化專案和專案結構
+- [常用命令](docs/06-commands.md) - Go 常用命令參考
+- [常見問題](docs/07-troubleshooting.md) - 問題排查與解決方案
 
 ## 技術棧
 
