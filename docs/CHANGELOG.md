@@ -29,7 +29,7 @@
 - [ ] CSRF 防護 - Token 驗證
 - [ ] Rate Limiting - API 請求限流
 - [ ] SQL Injection 防護 - 參數化查詢檢查
-- [ ] Input Validation - 更完整的輸入驗證
+- [x] Input Validation - 更完整的輸入驗證
 
 #### 測試
 - [x] 單元測試範例 - `app/utils/jwt_test.go`
@@ -38,6 +38,7 @@
 - [ ] 整合測試（Integration Test）- API 端對端
 
 #### 文件
+- [x] 參數驗證指南 - `docs/12-validation.md`
 - [ ] Swagger API 文件
 - [ ] Postman Collection
 - [ ] 部署文件（Docker、K8s）

@@ -59,8 +59,21 @@ var GlobalConfig *Config
 
 // 載入配置
 func LoadConfig() {
-	// 載入 .env 檔案
-	err := godotenv.Load()
+	// 載入 .env 檔案 - 嘗試多個位置
+	envPaths := []string{
+		".env",        // 當前目錄
+		"../.env",     // 上一級目錄
+		"../../.env",  // 上上級目錄
+	}
+
+	var err error
+	for _, path := range envPaths {
+		err = godotenv.Load(path)
+		if err == nil {
+			break
+		}
+	}
+
 	if err != nil {
 		log.Println("警告: 找不到 .env 檔案，使用環境變數")
 	}

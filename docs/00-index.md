@@ -19,6 +19,7 @@
 | 09 | [測試指南](09-testing.md) | 單元測試、Table-Driven 測試 | 品質保證 |
 | 10 | [併發處理](10-concurrency.md) | Goroutines、Channels、Worker Pool | 任務隊列 |
 | 11 | [日誌系統](11-logging.md) | zerolog 結構化日誌、Request ID | 除錯追蹤 |
+| 12 | [參數驗證](12-validation.md) | 請求驗證、驗證規則、業務驗證 | 數據安全 |
 
 ---
 

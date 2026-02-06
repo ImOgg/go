@@ -12,6 +12,7 @@ func SetupRoutes(router *gin.Engine, application *app.App) {
 	// 建立 Controllers
 	userCtrl := controllers.NewUserController(application)
 	authCtrl := controllers.NewAuthController(application)
+	postCtrl := controllers.NewPostController(application)
 
 	// 全域中間件
 	router.Use(gin.Recovery())        // 錯誤恢復
@@ -54,6 +55,16 @@ func SetupRoutes(router *gin.Engine, application *app.App) {
 				users.PUT("/:id", userCtrl.Update)     // PUT    /api/users/:id
 				users.PATCH("/:id", userCtrl.Update)   // PATCH  /api/users/:id
 				users.DELETE("/:id", userCtrl.Destroy) // DELETE /api/users/:id
+			}
+
+			// RESTful Post 路由
+			posts := protected.Group("/posts")
+			{
+				posts.GET("", postCtrl.Index)      // GET    /api/posts
+				posts.POST("", postCtrl.Store)     // POST   /api/posts
+				posts.GET("/:id", postCtrl.Show)   // GET    /api/posts/:id
+				posts.PUT("/:id", postCtrl.Update) // PUT    /api/posts/:id
+				posts.DELETE("/:id", postCtrl.Delete) // DELETE /api/posts/:id
 			}
 
 			// 其他需要驗證的路由

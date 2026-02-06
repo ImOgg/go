@@ -14,6 +14,7 @@ type App struct {
 
 	// Repositories
 	UserRepository repositories.UserRepository
+	PostRepository repositories.PostRepository
 
 	// Services
 	UserService services.UserService
@@ -29,6 +30,7 @@ func NewApp(db *gorm.DB, log *logger.Logger) *App {
 
 	// 初始化 Repositories
 	app.UserRepository = repositories.NewUserRepository(db)
+	app.PostRepository = repositories.NewPostRepository(db)
 
 	// 初始化 Services（注入 Repository 依賴）
 	app.UserService = services.NewUserService(app.UserRepository)
